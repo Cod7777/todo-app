@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
-  const [tareas, setTareas] = useState([
-    { id: 1, texto: 'Aprender React', completada: false },
-    { id: 2, texto: 'Crear mi primer proyecto', completada: false },
-  ])
+  const [tareas, setTareas] = useState(() => {
+    const guardadas = localStorage.getItem('tareas')
+    return guardadas ? JSON.parse(guardadas) : []
+  })
   const [nuevaTarea, setNuevaTarea] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('tareas', JSON.stringify(tareas))
+  }, [tareas])
 
   function agregarTarea(e) {
     e.preventDefault()

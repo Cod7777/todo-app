@@ -1,30 +1,22 @@
 import { useState, useEffect } from 'react'
+import FormularioTarea from './components/FormularioTarea'
+import Filtros from './components/Filtros'
+import TareaItem from './components/TareaItem'
 
 function App() {
   const [tareas, setTareas] = useState(() => {
     const guardadas = localStorage.getItem('tareas')
     return guardadas ? JSON.parse(guardadas) : []
   })
-  const [nuevaTarea, setNuevaTarea] = useState('')
-  const [editandoId, setEditandoId] = useState(null)
-  const [textoEditado, setTextoEditado] = useState('')
   const [filtro, setFiltro] = useState('todas')
 
   useEffect(() => {
     localStorage.setItem('tareas', JSON.stringify(tareas))
   }, [tareas])
 
-  function agregarTarea(e) {
-    e.preventDefault()
-    if (nuevaTarea.trim() === '') return
-
-    const tarea = {
-      id: Date.now(),
-      texto: nuevaTarea.trim(),
-      completada: false,
-    }
+  function agregarTarea(texto) {
+    const tarea = { id: Date.now(), texto, completada: false }
     setTareas([...tareas, tarea])
-    setNuevaTarea('')
   }
 
   function completarTarea(id) {
@@ -39,26 +31,12 @@ function App() {
     setTareas(tareas.filter((tarea) => tarea.id !== id))
   }
 
-  function empezarEdicion(tarea) {
-    setEditandoId(tarea.id)
-    setTextoEditado(tarea.texto)
-  }
-
-  function guardarEdicion(id) {
-    if (textoEditado.trim() === '') return
-
+  function editarTarea(id, nuevoTexto) {
     setTareas(
       tareas.map((tarea) =>
-        tarea.id === id ? { ...tarea, texto: textoEditado.trim() } : tarea
+        tarea.id === id ? { ...tarea, texto: nuevoTexto } : tarea
       )
     )
-    setEditandoId(null)
-    setTextoEditado('')
-  }
-
-  function cancelarEdicion() {
-    setEditandoId(null)
-    setTextoEditado('')
   }
 
   const tareasVisibles = tareas.filter((tarea) => {
@@ -73,36 +51,8 @@ function App() {
     <div>
       <h1>Mis tareas</h1>
 
-      <form onSubmit={agregarTarea}>
-        <input
-          type="text"
-          placeholder="Escribe una tarea..."
-          value={nuevaTarea}
-          onChange={(e) => setNuevaTarea(e.target.value)}
-        />
-        <button type="submit">Agregar</button>
-      </form>
-
-      <div>
-        <button
-          onClick={() => setFiltro('todas')}
-          disabled={filtro === 'todas'}
-        >
-          Todas
-        </button>
-        <button
-          onClick={() => setFiltro('pendientes')}
-          disabled={filtro === 'pendientes'}
-        >
-          Pendientes
-        </button>
-        <button
-          onClick={() => setFiltro('completadas')}
-          disabled={filtro === 'completadas'}
-        >
-          Completadas
-        </button>
-      </div>
+      <FormularioTarea onAgregar={agregarTarea} />
+      <Filtros filtro={filtro} onCambiar={setFiltro} />
 
       <p>
         {pendientes} {pendientes === 1 ? 'tarea pendiente' : 'tareas pendientes'}
@@ -110,36 +60,13 @@ function App() {
 
       <ul>
         {tareasVisibles.map((tarea) => (
-          <li key={tarea.id}>
-            {editandoId === tarea.id ? (
-              <>
-                <input
-                  type="text"
-                  value={textoEditado}
-                  onChange={(e) => setTextoEditado(e.target.value)}
-                />
-                <button onClick={() => guardarEdicion(tarea.id)}>Guardar</button>
-                <button onClick={cancelarEdicion}>Cancelar</button>
-              </>
-            ) : (
-              <>
-                <input
-                  type="checkbox"
-                  checked={tarea.completada}
-                  onChange={() => completarTarea(tarea.id)}
-                />
-                <span
-                  style={{
-                    textDecoration: tarea.completada ? 'line-through' : 'none',
-                  }}
-                >
-                  {tarea.texto}
-                </span>
-                <button onClick={() => empezarEdicion(tarea)}>Editar</button>
-                <button onClick={() => borrarTarea(tarea.id)}>Borrar</button>
-              </>
-            )}
-          </li>
+          <TareaItem
+            key={tarea.id}
+            tarea={tarea}
+            onCompletar={completarTarea}
+            onBorrar={borrarTarea}
+            onGuardar={editarTarea}
+          />
         ))}
       </ul>
     </div>

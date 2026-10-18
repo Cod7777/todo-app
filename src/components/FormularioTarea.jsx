@@ -12,7 +12,7 @@ function FormularioTarea({ onAgregar }) {
   }
 
   return (
-    <form onSubmit={manejarSubmit}>
+      <form className="formulario" onSubmit={manejarSubmit}>
       <input
         type="text"
         placeholder="Escribe una tarea..."

@@ -18,7 +18,7 @@ function TareaItem({ tarea, onCompletar, onBorrar, onGuardar }) {
 
   if (editando) {
     return (
-      <li>
+      <li className="tarea">
         <input
           type="text"
           value={textoEditado}
@@ -26,27 +26,29 @@ function TareaItem({ tarea, onCompletar, onBorrar, onGuardar }) {
           onKeyDown={(e) => e.key === 'Enter' && guardar()}
         />
         <button onClick={guardar}>Guardar</button>
-        <button onClick={cancelar}>Cancelar</button>
+        <button className="btn-secundario" onClick={cancelar}>
+          Cancelar
+        </button>
       </li>
     )
   }
 
   return (
-    <li>
+    <li className="tarea">
       <input
         type="checkbox"
         checked={tarea.completada}
         onChange={() => onCompletar(tarea.id)}
       />
-      <span
-        style={{
-          textDecoration: tarea.completada ? 'line-through' : 'none',
-        }}
-      >
+      <span className={`tarea-texto ${tarea.completada ? 'completada' : ''}`}>
         {tarea.texto}
       </span>
-      <button onClick={() => setEditando(true)}>Editar</button>
-      <button onClick={() => onBorrar(tarea.id)}>Borrar</button>
+      <button className="btn-secundario" onClick={() => setEditando(true)}>
+        Editar
+      </button>
+      <button className="btn-peligro" onClick={() => onBorrar(tarea.id)}>
+        Borrar
+      </button>
     </li>
   )
 }

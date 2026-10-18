@@ -6,12 +6,12 @@ function Filtros({ filtro, onCambiar }) {
   ]
 
   return (
-    <div>
+    <div className="filtros">
       {opciones.map((opcion) => (
         <button
           key={opcion.valor}
+          className={filtro === opcion.valor ? 'activo' : ''}
           onClick={() => onCambiar(opcion.valor)}
-          disabled={filtro === opcion.valor}
         >
           {opcion.etiqueta}
         </button>

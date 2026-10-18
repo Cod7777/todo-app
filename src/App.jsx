@@ -48,27 +48,31 @@ function App() {
   const pendientes = tareas.filter((tarea) => !tarea.completada).length
 
   return (
-    <div>
+    <div className="app">
       <h1>Mis tareas</h1>
 
       <FormularioTarea onAgregar={agregarTarea} />
       <Filtros filtro={filtro} onCambiar={setFiltro} />
 
-      <p>
+      <p className="contador">
         {pendientes} {pendientes === 1 ? 'tarea pendiente' : 'tareas pendientes'}
       </p>
 
-      <ul>
-        {tareasVisibles.map((tarea) => (
-          <TareaItem
-            key={tarea.id}
-            tarea={tarea}
-            onCompletar={completarTarea}
-            onBorrar={borrarTarea}
-            onGuardar={editarTarea}
-          />
-        ))}
-      </ul>
+      {tareasVisibles.length === 0 ? (
+        <p className="vacio">No hay tareas para mostrar</p>
+      ) : (
+        <ul className="lista">
+          {tareasVisibles.map((tarea) => (
+            <TareaItem
+              key={tarea.id}
+              tarea={tarea}
+              onCompletar={completarTarea}
+              onBorrar={borrarTarea}
+              onGuardar={editarTarea}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

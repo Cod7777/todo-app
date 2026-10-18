@@ -8,6 +8,7 @@ function App() {
   const [nuevaTarea, setNuevaTarea] = useState('')
   const [editandoId, setEditandoId] = useState(null)
   const [textoEditado, setTextoEditado] = useState('')
+  const [filtro, setFiltro] = useState('todas')
 
   useEffect(() => {
     localStorage.setItem('tareas', JSON.stringify(tareas))
@@ -60,6 +61,14 @@ function App() {
     setTextoEditado('')
   }
 
+  const tareasVisibles = tareas.filter((tarea) => {
+    if (filtro === 'pendientes') return !tarea.completada
+    if (filtro === 'completadas') return tarea.completada
+    return true
+  })
+
+  const pendientes = tareas.filter((tarea) => !tarea.completada).length
+
   return (
     <div>
       <h1>Mis tareas</h1>
@@ -74,8 +83,33 @@ function App() {
         <button type="submit">Agregar</button>
       </form>
 
+      <div>
+        <button
+          onClick={() => setFiltro('todas')}
+          disabled={filtro === 'todas'}
+        >
+          Todas
+        </button>
+        <button
+          onClick={() => setFiltro('pendientes')}
+          disabled={filtro === 'pendientes'}
+        >
+          Pendientes
+        </button>
+        <button
+          onClick={() => setFiltro('completadas')}
+          disabled={filtro === 'completadas'}
+        >
+          Completadas
+        </button>
+      </div>
+
+      <p>
+        {pendientes} {pendientes === 1 ? 'tarea pendiente' : 'tareas pendientes'}
+      </p>
+
       <ul>
-        {tareas.map((tarea) => (
+        {tareasVisibles.map((tarea) => (
           <li key={tarea.id}>
             {editandoId === tarea.id ? (
               <>

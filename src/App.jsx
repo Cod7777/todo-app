@@ -6,6 +6,8 @@ function App() {
     return guardadas ? JSON.parse(guardadas) : []
   })
   const [nuevaTarea, setNuevaTarea] = useState('')
+  const [editandoId, setEditandoId] = useState(null)
+  const [textoEditado, setTextoEditado] = useState('')
 
   useEffect(() => {
     localStorage.setItem('tareas', JSON.stringify(tareas))
@@ -36,6 +38,28 @@ function App() {
     setTareas(tareas.filter((tarea) => tarea.id !== id))
   }
 
+  function empezarEdicion(tarea) {
+    setEditandoId(tarea.id)
+    setTextoEditado(tarea.texto)
+  }
+
+  function guardarEdicion(id) {
+    if (textoEditado.trim() === '') return
+
+    setTareas(
+      tareas.map((tarea) =>
+        tarea.id === id ? { ...tarea, texto: textoEditado.trim() } : tarea
+      )
+    )
+    setEditandoId(null)
+    setTextoEditado('')
+  }
+
+  function cancelarEdicion() {
+    setEditandoId(null)
+    setTextoEditado('')
+  }
+
   return (
     <div>
       <h1>Mis tareas</h1>
@@ -53,19 +77,34 @@ function App() {
       <ul>
         {tareas.map((tarea) => (
           <li key={tarea.id}>
-            <input
-              type="checkbox"
-              checked={tarea.completada}
-              onChange={() => completarTarea(tarea.id)}
-            />
-            <span
-              style={{
-                textDecoration: tarea.completada ? 'line-through' : 'none',
-              }}
-            >
-              {tarea.texto}
-            </span>
-            <button onClick={() => borrarTarea(tarea.id)}>Borrar</button>
+            {editandoId === tarea.id ? (
+              <>
+                <input
+                  type="text"
+                  value={textoEditado}
+                  onChange={(e) => setTextoEditado(e.target.value)}
+                />
+                <button onClick={() => guardarEdicion(tarea.id)}>Guardar</button>
+                <button onClick={cancelarEdicion}>Cancelar</button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="checkbox"
+                  checked={tarea.completada}
+                  onChange={() => completarTarea(tarea.id)}
+                />
+                <span
+                  style={{
+                    textDecoration: tarea.completada ? 'line-through' : 'none',
+                  }}
+                >
+                  {tarea.texto}
+                </span>
+                <button onClick={() => empezarEdicion(tarea)}>Editar</button>
+                <button onClick={() => borrarTarea(tarea.id)}>Borrar</button>
+              </>
+            )}
           </li>
         ))}
       </ul>
